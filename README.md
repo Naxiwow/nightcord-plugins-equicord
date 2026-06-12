@@ -1,42 +1,48 @@
 <div align="center">
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:09090d,50:7f1d1d,100:dc2626&height=200&section=header&text=Nightcord%20Plugins&fontSize=60&fontColor=f5f5f5&animation=fadeIn&fontAlignY=38&desc=Equicord%20compatibility%20refork&descAlignY=58&descSize=16&descColor=a3a3a3" width="100%"/>
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:040004,40:2d0010,100:8b0000&height=220&section=header&text=nightcord-plugins-equicord&fontSize=42&fontColor=f5f0f0&animation=fadeIn&fontAlignY=40&desc=Compatibility%20refork%20of%20Nightcord%20plugins%20for%20Equicord&descAlignY=60&descSize=16&descColor=cc0000" width="100%"/>
 
 <br/>
 
-[![Equicord](https://img.shields.io/badge/Equicord-dc2626?style=for-the-badge&logo=discord&logoColor=white&labelColor=09090d)](https://github.com/Equicord/Equicord)
-[![Nightcord](https://img.shields.io/badge/Nightcord-dc2626?style=for-the-badge&logo=gitea&logoColor=white&labelColor=09090d)](https://git.nightcord.st/nightcord/nightcord)
-[![GitHub](https://img.shields.io/badge/GitHub-dc2626?style=for-the-badge&logo=github&logoColor=white&labelColor=09090d)](https://github.com/Naxiwow)
+[![Equicord](https://img.shields.io/badge/Equicord-8b0000?style=for-the-badge&logo=discord&logoColor=f5f0f0&labelColor=080008)](https://github.com/Equicord/Equicord)
+[![Nightcord](https://img.shields.io/badge/Nightcord-8b0000?style=for-the-badge&logo=gitea&logoColor=f5f0f0&labelColor=080008)](https://git.nightcord.st/nightcord/nightcord)
+[![TypeScript](https://img.shields.io/badge/TypeScript-8b0000?style=for-the-badge&logo=typescript&logoColor=f5f0f0&labelColor=080008)](https://github.com/Naxiwow)
 
 </div>
 
----
+<br/>
 
-## About
+<div align="center">
 
-Compatibility refork of select [Nightcord](https://git.nightcord.st/nightcord/nightcord) plugins for [Equicord](https://github.com/Equicord/Equicord).
+```
+I did not write these plugins. Credit goes to the original Nightcord contributors.
+This repo makes them compile and run in Equicord without breaking voice / audio.
+```
 
-I did **not** write these plugins. All credit goes to the original Nightcord contributors.  
-This repo only exists to make them compile and run in Equicord without breaking voice/audio.
+</div>
 
----
+<br/>
 
-## Plugins
+## ◈ &nbsp; Plugins
+
+<div align="center">
 
 | Plugin | Description |
-|---|---|
-| **cancelFriendRequest** | Click the "Friend Request Sent" button again to cancel it |
+|:---|:---|
+| **cancelFriendRequest** | Click "Friend Request Sent" again to cancel it |
 | **eventLogs** | Comprehensive event log — voice joins/leaves, friends, server changes |
-| **exportDM** | Export DMs to HTML / TXT / JSON / CSV / Markdown |
-| **followUser** | Right-click a user → Follow User — auto-joins their voice channel |
+| **exportDM** | Export DMs to HTML · TXT · JSON · CSV · Markdown |
+| **followUser** | Right-click → Follow User — auto-joins their voice channel |
 | **lockGroup** | Lock group DMs — auto-kicks anyone added without owner approval |
 | **messageLoggerEnhanced** | Full message logger with deleted/edited tracking and image cache |
 | **muteAllServers** | Right-click any server → mute all + mark everything as read |
 | **selfDestruct** | Messages auto-delete after a configurable delay |
 
----
+</div>
 
-## What was changed
+<br/>
+
+## ◈ &nbsp; What was changed
 
 <details>
 <summary><b>eventLogs</b> — 2 fixes</summary>
@@ -53,15 +59,12 @@ This repo only exists to make them compile and run in Equicord without breaking 
 **Fix 2 — VOICE_STATE_UPDATES blocking Discord's audio pipeline**
 ```diff
 - sub("VOICE_STATE_UPDATES", d => {
--     // ... all processing sync, blocks audio thread
--     pushLog(...);
+-     pushLog(...);   // sync, blocks audio thread
 - });
 + sub("VOICE_STATE_UPDATES", d => {
 +     const snapshot = [...d.voiceStates];
-+     // state update stays sync (needed for correctness)
-+     for (const s of snapshot) { prevVS.set(s.userId, s); }
-+     // heavy work deferred — audio thread never blocked
-+     setTimeout(() => { for (const s of snapshot) { pushLog(...); } }, 0);
++     for (const s of snapshot) { prevVS.set(s.userId, s); }   // sync — correctness
++     setTimeout(() => { for (const s of snapshot) { pushLog(...); } }, 0);  // deferred
 + });
 ```
 
@@ -88,15 +91,11 @@ This repo only exists to make them compile and run in Equicord without breaking 
 **Fix — voice handler side-effects deferred to avoid audio blocking**
 ```diff
   function onVoiceStateUpdates(data: any) {
--     if (newCh !== followedChannel) {
--         followedChannel = newCh;
--         resetInactivityTimer();
--         joinChannel(newCh);        // dispatches sync
--         Toasts.show(...);          // triggers sync
--     }
-+     // state updated sync so future comparisons are correct
-+     followedChannel = newCh;
-+     // effects deferred — audio dispatch thread never blocked
+-     followedChannel = newCh;
+-     resetInactivityTimer();
+-     joinChannel(newCh);
+-     Toasts.show(...);
++     followedChannel = newCh;   // sync — future comparisons correct
 +     setTimeout(() => {
 +         resetInactivityTimer();
 +         joinChannel(newCh);
@@ -133,38 +132,35 @@ This repo only exists to make them compile and run in Equicord without breaking 
 
 <br/>
 
-**Fix — `findByPropsLazy` called inside async function (new proxy each invocation)**
+**Fix — `findByPropsLazy` called inside async function**
 ```diff
 + const updateGuildNotificationSettings = findByPropsLazy("updateGuildNotificationSettings");
 
   async function muteAll() {
 -     const updateSettings = findByPropsLazy("updateGuildNotificationSettings");
--     if (updateSettings?.updateGuildNotificationSettings) {
--         await updateSettings.updateGuildNotificationSettings(id, settings);
-+     if (updateGuildNotificationSettings?.updateGuildNotificationSettings) {
-+         await updateGuildNotificationSettings.updateGuildNotificationSettings(id, notifSettings);
-      }
+-     await updateSettings.updateGuildNotificationSettings(id, settings);
++     await updateGuildNotificationSettings.updateGuildNotificationSettings(id, notifSettings);
   }
 ```
 
 </details>
 
 <details>
-<summary><b>cancelFriendRequest / lockGroup / selfDestruct</b> — no changes needed</summary>
+<summary><b>cancelFriendRequest · lockGroup · selfDestruct</b> — no changes</summary>
 
 <br/>
 
-Compatible with Equicord as-is. No nightcord-specific imports, no voice patches.
+Compatible with Equicord as-is. No nightcord-specific imports or voice patches.
 
 </details>
 
 <br/>
 
-> **Excluded:** `FakeVoice` and `VolumeBooster` — both apply compile-time webpack patches on chunks co-located with Discord's voice activity detection. Active regardless of the plugin toggle in settings, permanently breaking auto input sensitivity. Not fixable without a full rewrite.
+> **Excluded:** `FakeVoice` and `VolumeBooster` — both apply compile-time webpack patches on chunks co-located with Discord's voice activity detection. Active regardless of the plugin toggle, permanently breaking auto input sensitivity. Not fixable without a full rewrite.
 
----
+<br/>
 
-## Installation
+## ◈ &nbsp; Installation
 
 Drop any plugin folder into `src/userplugins/` in your Equicord source, then:
 
@@ -174,16 +170,18 @@ pnpm build
 
 Copy `dist/desktop.asar` → `%APPDATA%\Equicord\equicord.asar` and restart Discord.
 
----
+<br/>
 
-## Credits
+## ◈ &nbsp; Credits
 
 - [Nightcord](https://git.nightcord.st/nightcord/nightcord) — original plugin authors
 - [Equicord](https://github.com/Equicord/Equicord) — the client mod
 - [Vencord](https://github.com/Vendicated/Vencord) — upstream framework
 
----
+<br/>
 
 <div align="center">
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:dc2626,50:7f1d1d,100:09090d&height=120&section=footer" width="100%"/>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:8b0000,50:2d0010,100:040004&height=140&section=footer" width="100%"/>
+
 </div>
