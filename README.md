@@ -38,19 +38,129 @@ This repo only exists to make them compile and run in Equicord without breaking 
 
 ## What was changed
 
-| Plugin | Issue | Fix |
-|---|---|---|
-| **eventLogs** | `import { t, useTranslation } from "../autoTranslateNightcord"` | Replaced with `const t = (s: string) => s` |
-| **eventLogs** | `VOICE_STATE_UPDATES` blocking audio pipeline synchronously | Wrapped effects in `setTimeout(0)` |
-| **exportDM** | Same `autoTranslateNightcord` import | Replaced with inline stub |
-| **followUser** | Minor risk of blocking audio in voice handler | Effects deferred via `setTimeout(0)` |
-| **messageLoggerEnhanced** | `@nightcordplugins/...` webpack path aliases | Replaced with relative paths |
-| **muteAllServers** | `findByPropsLazy` called inside async function | Moved to module level |
-| **cancelFriendRequest** | — | Compatible as-is |
-| **lockGroup** | — | Compatible as-is |
-| **selfDestruct** | — | Compatible as-is |
+<details>
+<summary><b>eventLogs</b> — 2 fixes</summary>
 
-> **Excluded:** `FakeVoice` and `VolumeBooster` — patch webpack chunks co-located with Discord's voice activity detection. Permanently breaks auto input sensitivity even when disabled. Not fixable without a full rewrite.
+<br/>
+
+**Fix 1 — nightcord-only import**
+```diff
+- import { t, useTranslation } from "../autoTranslateNightcord";
++ const t = (s: string) => s;
++ const useTranslation = () => ({ t });
+```
+
+**Fix 2 — VOICE_STATE_UPDATES blocking Discord's audio pipeline**
+```diff
+- sub("VOICE_STATE_UPDATES", d => {
+-     // ... all processing sync, blocks audio thread
+-     pushLog(...);
+- });
++ sub("VOICE_STATE_UPDATES", d => {
++     const snapshot = [...d.voiceStates];
++     // state update stays sync (needed for correctness)
++     for (const s of snapshot) { prevVS.set(s.userId, s); }
++     // heavy work deferred — audio thread never blocked
++     setTimeout(() => { for (const s of snapshot) { pushLog(...); } }, 0);
++ });
+```
+
+</details>
+
+<details>
+<summary><b>exportDM</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — nightcord-only import**
+```diff
+- import { t } from "../autoTranslateNightcord";
++ const t = (s: string) => s;
+```
+
+</details>
+
+<details>
+<summary><b>followUser</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — voice handler side-effects deferred to avoid audio blocking**
+```diff
+  function onVoiceStateUpdates(data: any) {
+-     if (newCh !== followedChannel) {
+-         followedChannel = newCh;
+-         resetInactivityTimer();
+-         joinChannel(newCh);        // dispatches sync
+-         Toasts.show(...);          // triggers sync
+-     }
++     // state updated sync so future comparisons are correct
++     followedChannel = newCh;
++     // effects deferred — audio dispatch thread never blocked
++     setTimeout(() => {
++         resetInactivityTimer();
++         joinChannel(newCh);
++         Toasts.show(...);
++     }, 0);
+  }
+```
+
+</details>
+
+<details>
+<summary><b>messageLoggerEnhanced</b> — 2 fixes</summary>
+
+<br/>
+
+**Fix 1 — nightcord webpack path alias in `LogsButton.tsx`**
+```diff
+- import { cl } from "@nightcordplugins/messageLoggerEnhanced/index";
++ import { cl } from "../index";
+```
+
+**Fix 2 — nightcord webpack path aliases in `FolderSelectInput.tsx`**
+```diff
+- import { cl, Native, settings } from "@nightcordplugins/messageLoggerEnhanced/index";
+- import { DEFAULT_IMAGE_CACHE_DIR } from "@nightcordplugins/messageLoggerEnhanced/utils/constants";
++ import { cl, Native, settings } from "../index";
++ import { DEFAULT_IMAGE_CACHE_DIR } from "../utils/constants";
+```
+
+</details>
+
+<details>
+<summary><b>muteAllServers</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — `findByPropsLazy` called inside async function (new proxy each invocation)**
+```diff
++ const updateGuildNotificationSettings = findByPropsLazy("updateGuildNotificationSettings");
+
+  async function muteAll() {
+-     const updateSettings = findByPropsLazy("updateGuildNotificationSettings");
+-     if (updateSettings?.updateGuildNotificationSettings) {
+-         await updateSettings.updateGuildNotificationSettings(id, settings);
++     if (updateGuildNotificationSettings?.updateGuildNotificationSettings) {
++         await updateGuildNotificationSettings.updateGuildNotificationSettings(id, notifSettings);
+      }
+  }
+```
+
+</details>
+
+<details>
+<summary><b>cancelFriendRequest / lockGroup / selfDestruct</b> — no changes needed</summary>
+
+<br/>
+
+Compatible with Equicord as-is. No nightcord-specific imports, no voice patches.
+
+</details>
+
+<br/>
+
+> **Excluded:** `FakeVoice` and `VolumeBooster` — both apply compile-time webpack patches on chunks co-located with Discord's voice activity detection. Active regardless of the plugin toggle in settings, permanently breaking auto input sensitivity. Not fixable without a full rewrite.
 
 ---
 
