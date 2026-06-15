@@ -113,34 +113,6 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 </details>
 
 <details>
-<summary><b>loginWithToken</b> — 1 fix</summary>
-
-<br/>
-
-**Fix — removed Equicord dev constant, replaced with inline author**
-```diff
-- import { EquicordDevs } from "@utils/constants";
-  ...
-- authors: [EquicordDevs.thororen],
-+ authors: [{ name: "naxiwow", id: 875342291001278504n }],
-```
-
-</details>
-
-<details>
-<summary><b>messageCleaner</b> — 1 fix</summary>
-
-<br/>
-
-**Fix — replaced original author with repo owner**
-```diff
-- authors: [{ name: "Bash", id: 1327483363518582784n }],
-+ authors: [{ name: "naxiwow", id: 875342291001278504n }],
-```
-
-</details>
-
-<details>
 <summary><b>messageLoggerEnhanced</b> — 2 fixes</summary>
 
 <br/>
@@ -162,7 +134,7 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 </details>
 
 <details>
-<summary><b>multiInstance</b> — 4 fixes</summary>
+<summary><b>multiInstance</b> — 3 fixes</summary>
 
 <br/>
 
@@ -190,12 +162,6 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 
 Several characters were corrupted during copy from nightcord source (`â€"` → `-`, `ðŸ"—` → `🔗`, `â€º` → `›`, etc.). All fixed manually.
 
-**Fix 4 — author**
-```diff
-- authors: [{ name: "Nightcord", id: 0n }],
-+ authors: [{ name: "naxiwow", id: 875342291001278504n }],
-```
-
 </details>
 
 <details>
@@ -217,27 +183,11 @@ Several characters were corrupted during copy from nightcord source (`â€"` �
 </details>
 
 <details>
-<summary><b>silentDelete</b> — 1 fix</summary>
+<summary><b>tokenImporter</b> — 1 fix</summary>
 
 <br/>
 
-**Fix — replaced original authors with repo owner**
-```diff
-- authors: [
--     { name: "Aurick", id: 1348025017233047634n },
--     { name: "appleflyer", id: 1209096766075703368n }
-- ],
-+ authors: [{ name: "naxiwow", id: 875342291001278504n }],
-```
-
-</details>
-
-<details>
-<summary><b>tokenImporter</b> — 2 fixes</summary>
-
-<br/>
-
-**Fix 1 — nightcord translation function + unused import**
+**Fix — nightcord translation function + unused import**
 ```diff
 - import { t } from "../autoTranslateNightcord";
 - import { addHeaderBarButton, HeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
@@ -247,35 +197,14 @@ Several characters were corrupted during copy from nightcord source (`â€"` �
 + placeholder={"Search accounts..."}
 ```
 
-**Fix 2 — author**
-```diff
-- authors: [{ name: "Nightcord", id: 0n }],
-+ authors: [{ name: "naxiwow", id: 875342291001278504n }],
-```
-
 </details>
 
 <details>
-<summary><b>unlimitedAccounts</b> — 1 fix</summary>
+<summary><b>cancelFriendRequest · lockGroup · loginWithToken · messageCleaner · selfDestruct · silentDelete · unlimitedAccounts</b> — no changes</summary>
 
 <br/>
 
-**Fix — removed Vencord dev constant, replaced with inline author**
-```diff
-- import { Devs } from "@utils/constants";
-  ...
-- authors: [Devs.thororen],
-+ authors: [{ name: "naxiwow", id: 875342291001278504n }],
-```
-
-</details>
-
-<details>
-<summary><b>cancelFriendRequest · lockGroup · selfDestruct</b> — no changes</summary>
-
-<br/>
-
-Compatible with Equicord as-is. No nightcord-specific imports or voice patches.
+Compatible with Equicord as-is. No nightcord-specific imports or patches needed.
 
 </details>
 
