@@ -134,7 +134,7 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 </details>
 
 <details>
-<summary><b>multiInstance</b> — 3 fixes</summary>
+<summary><b>multiInstance</b> — 2 fixes</summary>
 
 <br/>
 
@@ -157,10 +157,6 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 +     });
 + }
 ```
-
-**Fix 3 — PowerShell Unicode corruption on file write**
-
-Several characters were corrupted during copy from nightcord source (`â€"` → `-`, `ðŸ"—` → `🔗`, `â€º` → `›`, etc.). All fixed manually.
 
 </details>
 
