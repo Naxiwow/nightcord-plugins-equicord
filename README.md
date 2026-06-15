@@ -34,9 +34,15 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 | **exportDM** | Export DMs to HTML · TXT · JSON · CSV · Markdown |
 | **followUser** | Right-click → Follow User — auto-joins their voice channel |
 | **lockGroup** | Lock group DMs — auto-kicks anyone added without owner approval |
+| **loginWithToken** | Adds a "Login with Token" button on the Discord login page |
+| **messageCleaner** | Cleans all your messages in a channel or server with rate-limit handling |
 | **messageLoggerEnhanced** | Full message logger with deleted/edited tracking and image cache |
+| **multiInstance** | Opens a 2nd Discord window with another account |
 | **muteAllServers** | Right-click any server → mute all + mark everything as read |
 | **selfDestruct** | Messages auto-delete after a configurable delay |
+| **silentDelete** | Silently deletes a message — bypasses message loggers via placeholder replacement |
+| **tokenImporter** | Import and manage multiple Discord accounts via tokens |
+| **unlimitedAccounts** | Increases the number of accounts you can add (default: unlimited) |
 
 </div>
 
@@ -107,6 +113,34 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 </details>
 
 <details>
+<summary><b>loginWithToken</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — removed Equicord dev constant, replaced with inline author**
+```diff
+- import { EquicordDevs } from "@utils/constants";
+  ...
+- authors: [EquicordDevs.thororen],
++ authors: [{ name: "naxiwow", id: 875342291001278504n }],
+```
+
+</details>
+
+<details>
+<summary><b>messageCleaner</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — replaced original author with repo owner**
+```diff
+- authors: [{ name: "Bash", id: 1327483363518582784n }],
++ authors: [{ name: "naxiwow", id: 875342291001278504n }],
+```
+
+</details>
+
+<details>
 <summary><b>messageLoggerEnhanced</b> — 2 fixes</summary>
 
 <br/>
@@ -128,6 +162,43 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 </details>
 
 <details>
+<summary><b>multiInstance</b> — 4 fixes</summary>
+
+<br/>
+
+**Fix 1 — nightcord translation function + leftover `t()` call in JSX**
+```diff
+- import { t } from "../autoTranslateNightcord";
+  ...
+- {t(allAccounts.length !== 1 ? "OTHER ACCOUNTS" : "OTHER ACCOUNT")}
++ {allAccounts.length !== 1 ? "OTHER ACCOUNTS" : "OTHER ACCOUNT"}
+```
+
+**Fix 2 — nightcord-specific native import replaced with inline implementation**
+```diff
+- import { registerMediaPermissionsForSession } from "../../nightcord/main/mediaPermissions";
++ function registerMediaPermissionsForSession(ses: Electron.Session): void {
++     ses.setPermissionRequestHandler((_wc, permission, callback) => {
++         const allowed = ["media", "mediaKeySystem", "geolocation", "notifications",
++                          "fullscreen", "pointerLock", "openExternal", "unknown"];
++         callback(allowed.includes(permission));
++     });
++ }
+```
+
+**Fix 3 — PowerShell Unicode corruption on file write**
+
+Several characters were corrupted during copy from nightcord source (`â€"` → `-`, `ðŸ"—` → `🔗`, `â€º` → `›`, etc.). All fixed manually.
+
+**Fix 4 — author**
+```diff
+- authors: [{ name: "Nightcord", id: 0n }],
++ authors: [{ name: "naxiwow", id: 875342291001278504n }],
+```
+
+</details>
+
+<details>
 <summary><b>muteAllServers</b> — 1 fix</summary>
 
 <br/>
@@ -141,6 +212,60 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 -     await updateSettings.updateGuildNotificationSettings(id, settings);
 +     await updateGuildNotificationSettings.updateGuildNotificationSettings(id, notifSettings);
   }
+```
+
+</details>
+
+<details>
+<summary><b>silentDelete</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — replaced original authors with repo owner**
+```diff
+- authors: [
+-     { name: "Aurick", id: 1348025017233047634n },
+-     { name: "appleflyer", id: 1209096766075703368n }
+- ],
++ authors: [{ name: "naxiwow", id: 875342291001278504n }],
+```
+
+</details>
+
+<details>
+<summary><b>tokenImporter</b> — 2 fixes</summary>
+
+<br/>
+
+**Fix 1 — nightcord translation function + unused import**
+```diff
+- import { t } from "../autoTranslateNightcord";
+- import { addHeaderBarButton, HeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
++ import { addHeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
+  ...
+- placeholder={t("Search accounts...")}
++ placeholder={"Search accounts..."}
+```
+
+**Fix 2 — author**
+```diff
+- authors: [{ name: "Nightcord", id: 0n }],
++ authors: [{ name: "naxiwow", id: 875342291001278504n }],
+```
+
+</details>
+
+<details>
+<summary><b>unlimitedAccounts</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — removed Vencord dev constant, replaced with inline author**
+```diff
+- import { Devs } from "@utils/constants";
+  ...
+- authors: [Devs.thororen],
++ authors: [{ name: "naxiwow", id: 875342291001278504n }],
 ```
 
 </details>
