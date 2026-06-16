@@ -183,11 +183,9 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 
 <br/>
 
-**Fix — nightcord translation function + unused import**
+**Fix — nightcord translation function**
 ```diff
 - import { t } from "../autoTranslateNightcord";
-- import { addHeaderBarButton, HeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
-+ import { addHeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
   ...
 - placeholder={t("Search accounts...")}
 + placeholder={"Search accounts..."}
