@@ -33,6 +33,7 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 | **eventLogs** | Comprehensive event log — voice joins/leaves, friends, server changes |
 | **exportDM** | Export DMs to HTML · TXT · JSON · CSV · Markdown |
 | **followUser** | Right-click → Follow User — auto-joins their voice channel |
+| **leaveAllServers** | Right-click any server → Leave All Servers — pick which ones, owned servers excluded by default |
 | **lockGroup** | Lock group DMs — auto-kicks anyone added without owner approval |
 | **loginWithToken** | Adds a "Login with Token" button on the Discord login page |
 | **messageCleaner** | Cleans all your messages in a channel or server with rate-limit handling |
@@ -42,6 +43,7 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 | **selfDestruct** | Messages auto-delete after a configurable delay |
 | **silentDelete** | Silently deletes a message — bypasses message loggers via placeholder replacement |
 | **tokenImporter** | Import and manage multiple Discord accounts via tokens |
+| **unfriendAll** | Right-click any friend → Unfriend All — pick which friends to remove |
 | **unlimitedAccounts** | Increases the number of accounts you can add (default: unlimited) |
 
 </div>
@@ -108,6 +110,21 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 +         Toasts.show(...);
 +     }, 0);
   }
+```
+
+</details>
+
+<details>
+<summary><b>leaveAllServers</b> — 1 fix</summary>
+
+<br/>
+
+**Fix — naxicord-only translation import**
+```diff
+- import { t } from "@api/pluginI18n";
+  ...
+- label={t("Leave All Servers")}
++ label="Leave All Servers"
 ```
 
 </details>
@@ -190,6 +207,16 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 - placeholder={t("Search accounts...")}
 + placeholder={"Search accounts..."}
 ```
+
+</details>
+
+<details>
+<summary><b>unfriendAll</b> — new plugin</summary>
+
+<br/>
+
+Not from Nightcord — written for this repo, same UI as `leaveAllServers`.
+Removes friends one by one via `DELETE /users/@me/relationships/{id}` with a configurable delay (default 1000 ms) to avoid rate limits.
 
 </details>
 
