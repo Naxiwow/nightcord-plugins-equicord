@@ -1,0 +1,213 @@
+/* ── Unfriend All Plugin — style identique à ExportDM ── */
+
+.uaf-content {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* ── Barre de recherche ── */
+.uaf-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    transition: border-color 0.15s;
+}
+
+.uaf-search-bar:focus-within {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.uaf-search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 13px;
+    font-family: inherit;
+}
+
+.uaf-search-input::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+}
+
+.uaf-search-clear {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 0 2px;
+    line-height: 1;
+    transition: color 0.1s;
+}
+
+.uaf-search-clear:hover {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* ── Labels ── */
+.uaf-label {
+    margin: 0 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* ── Boutons Tout / Aucun ── */
+.uaf-mini-btn {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.1s;
+    font-family: inherit;
+}
+
+.uaf-mini-btn:hover:not(:disabled) {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.uaf-mini-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Liste amis ── */
+.uaf-friend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    max-height: 260px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.uaf-friend-list::-webkit-scrollbar { width: 4px; }
+.uaf-friend-list::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 2px; }
+
+.uaf-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+    padding: 16px;
+}
+
+.uaf-friend-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    border: 1.5px solid transparent;
+    transition: all 0.1s;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.uaf-friend-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.uaf-friend-row--selected {
+    border-color: #ed4245;
+    background: rgba(237, 66, 69, 0.1);
+}
+
+.uaf-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.uaf-avatar-placeholder {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(237, 66, 69, 0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+.uaf-friend-name {
+    flex: 1;
+    font-size: 13px;
+    color: #fff;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.uaf-friend-username {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.uaf-check {
+    color: #ed4245;
+    font-weight: 700;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+/* ── Status ── */
+.uaf-status {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.uaf-status--running { background: rgba(250, 166, 26, 0.12); color: #faa61a; }
+.uaf-status--done    { background: rgba(59, 165, 92, 0.12);  color: #3ba55c; }
+.uaf-status--error   { background: rgba(237, 66, 69, 0.12);  color: #ed4245; }
+
+/* ── Footer info ── */
+.uaf-footer-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+/* ── Bouton Unfriend ── */
+.uaf-remove-btn {
+    background: #ed4245;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 11px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: opacity 0.15s;
+    font-family: inherit;
+}
+
+.uaf-remove-btn:hover:not(:disabled) { opacity: 0.85; }
+.uaf-remove-btn:disabled { opacity: 0.4; cursor: not-allowed; }
