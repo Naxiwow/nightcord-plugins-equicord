@@ -37,6 +37,7 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 | **loginWithToken** | Adds a "Login with Token" button on the Discord login page |
 | **messageCleaner** | Cleans all your messages in a channel or server with rate-limit handling |
 | **messageLoggerEnhanced** | Full message logger with deleted/edited tracking and image cache |
+| **messageScheduler** | Schedule messages: pick time, server/channel and how many times — works in the web version |
 | **multiInstance** | Opens a 2nd Discord window with another account |
 | **muteAllServers** | Right-click any server → mute all + mark everything as read |
 | **selfDestruct** | Messages auto-delete after a configurable delay |

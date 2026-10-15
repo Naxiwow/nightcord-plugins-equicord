@@ -1,0 +1,267 @@
+/* ── Message Scheduler Plugin ── */
+
+.msch-content {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.msch-tabs {
+    display: flex;
+    gap: 6px;
+}
+
+.msch-tab {
+    flex: 1;
+    padding: 8px 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.msch-tab:hover {
+    color: #fff;
+}
+
+.msch-tab--active {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.msch-row {
+    display: flex;
+    gap: 10px;
+}
+
+.msch-field {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.msch-field--small {
+    flex: 0 0 90px;
+}
+
+.msch-label {
+    margin: 0 !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.msch-input {
+    width: 100%;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #fff;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    color-scheme: dark;
+    transition: border-color 0.15s;
+}
+
+.msch-input:focus {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.msch-input:disabled {
+    opacity: 0.5;
+}
+
+.msch-input option {
+    background: #1e1f22;
+    color: #fff;
+}
+
+.msch-textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.msch-hint {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.msch-hint--right {
+    text-align: right;
+}
+
+.msch-summary {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.msch-error {
+    font-size: 13px;
+    color: #ed4245;
+    background: rgba(237, 66, 69, 0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+.msch-submit {
+    padding: 10px 16px;
+    background: #8b0000;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: opacity 0.15s;
+}
+
+.msch-submit:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.msch-submit:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.msch-secondary {
+    align-self: flex-end;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.msch-secondary:hover {
+    color: #fff;
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.msch-empty {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 13px;
+    padding: 24px 16px;
+}
+
+.msch-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 380px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+
+.msch-item {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.msch-item--failed {
+    border-color: rgba(237, 66, 69, 0.4);
+}
+
+.msch-item-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.msch-item-channel {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+}
+
+.msch-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.msch-badge--pending {
+    background: rgba(250, 166, 26, 0.15);
+    color: #faa61a;
+}
+
+.msch-badge--done {
+    background: rgba(59, 165, 93, 0.15);
+    color: #3ba55d;
+}
+
+.msch-badge--failed {
+    background: rgba(237, 66, 69, 0.15);
+    color: #ed4245;
+}
+
+.msch-del {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0 2px;
+    line-height: 1;
+}
+
+.msch-del:hover {
+    color: #ed4245;
+}
+
+.msch-item-content {
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: pre-wrap;
+    word-break: break-word;
+    max-height: 72px;
+    overflow: hidden;
+}
+
+.msch-item-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.msch-item-error {
+    font-size: 12px;
+    color: #ed4245;
+}
