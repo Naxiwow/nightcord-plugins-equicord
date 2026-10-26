@@ -257,6 +257,13 @@ async function processMessageFetch(response: FetchMessagesResponse) {
     }
 }
 
+// Discord peut inclure des snowflakes bruts (strings/numbers) dans payload.messages
+// pour représenter des messages en lazy-loading non encore chargés.
+// Faire `'flags' in primitive` provoque un TypeError immédiat dans _handleLoadMessagesSuccess.
+function isMessageObject(m: unknown): m is LoggedMessageJSON {
+    return m !== null && typeof m === "object" && typeof (m as any).id === "string";
+}
+
 export default definePlugin({
     name: "MessageLoggerEnhanced",
     enabledByDefault: true,
@@ -317,7 +324,7 @@ export default definePlugin({
 
         // only check for expired attachments if the message is not deleted
         {
-            find: "\"/ephemeral-attachments/\"",
+            find: ".ATTACHMENTS_REFRESH_URLS,",
             replacement: {
                 match: /\i\.attachments\.some\(\i\)\|\|\i\.embeds\.some/,
                 replace: "!arguments[0].deleted && $&"
@@ -335,8 +342,9 @@ export default definePlugin({
     headerBarButton: {
         icon: LogsIcon,
         render() {
-            if (!settings.store.ShowLogsButton) return null;
-            return OpenLogsButton();
+            // Bouton "Open Logs" retiré à la demande de l'utilisateur.
+            // (Les logs restent accessibles via la Toolbox Equicord > Message Logger.)
+            return null;
         }
     },
 
@@ -358,8 +366,15 @@ export default definePlugin({
             Flogger.error("Failed to re-add deleted messages", e);
         }
         finally {
-            return messages;
+            const extra = (messages as any).extra;
+            let w = 0;
+            for (let i = 0; i < messages.length; i++) {
+                if (isMessageObject(messages[i])) messages[w++] = messages[i];
+            }
+            messages.length = w;
+            if (extra !== undefined) (messages as any).extra = extra;
         }
+        return messages;
     },
 
     isDeletedMessage: (id: string) => cacheSentMessages.get(id)?.deleted ?? false,

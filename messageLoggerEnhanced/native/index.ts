@@ -180,7 +180,10 @@ export async function downloadAttachment(_event: IpcMainInvokeEvent, attachment:
         const imageCacheDir = await getImageCacheDir();
         await ensureDirectoryExists(imageCacheDir);
 
-        const finalPath = path.join(imageCacheDir, `${attachment.id}${attachment.fileExtension}`);
+        const safeName = attachment.authorUsername
+            ? `${attachment.authorUsername}_${attachment.id}`
+            : attachment.id;
+        const finalPath = path.join(imageCacheDir, `${safeName}${attachment.fileExtension}`);
         await writeFile(finalPath, Buffer.from(ab));
 
         nativeSavedImages.set(attachment.id, finalPath);

@@ -56,6 +56,10 @@ export function isAttachmentGoodToCache(attachment: MessageAttachment, fileExten
 
 export async function cacheMessageImages(message: LoggedMessage | LoggedMessageJSON) {
     try {
+        const author = (message as any).author;
+        const rawUsername = author?.globalName || author?.username || "unknown";
+        const safeUsername = rawUsername.replace(/[/\\:*?"<>|]/g, "_").slice(0, 32);
+
         for (const attachment of message.attachments) {
             const fileExtension = getFileExtension(attachment.filename ?? attachment.url) ?? attachment?.content_type?.split("/")?.[1] ?? ".png";
 
@@ -66,6 +70,7 @@ export async function cacheMessageImages(message: LoggedMessage | LoggedMessageJ
 
             attachment.oldUrl = attachment.url;
             attachment.oldProxyUrl = attachment.proxy_url;
+            attachment.authorUsername = safeUsername;
 
             // only normal urls work if theres a charset in the content type /shrug
             if (attachment?.content_type?.includes(";")) {

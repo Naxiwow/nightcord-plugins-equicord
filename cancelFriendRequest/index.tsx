@@ -6,15 +6,17 @@
 
 import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { RelationshipStore, Toasts } from "@webpack/common";
+import { RelationshipStore } from "@webpack/common";
+import { Toasts } from "@api/legacyToast";
 
-const RelationshipActions = findByPropsLazy("removeFriend", "sendFriendRequest");
+// Discord renamed sendFriendRequest -> sendRequest, so the old props lookup found nothing.
+const RelationshipActions = findByPropsLazy("cancelFriendRequest", "addRelationship");
 
 const OUTGOING_REQUEST = 4;
 
 function cancelRequest(userId: string) {
     try {
-        RelationshipActions.removeFriend(userId);
+        RelationshipActions.cancelFriendRequest(userId);
         Toasts.show({ message: "Friend request cancelled ✓", type: Toasts.Type.SUCCESS, id: Toasts.genId() });
     } catch (e) {
         console.error("[CancelFriendRequest] Error:", e);
@@ -88,12 +90,24 @@ function scan(root: Document | Element = document) {
     });
 }
 
+// Coalesce bursts of DOM mutations into a single scan on the next idle tick,
+// instead of scanning per added node on every mutation (Discord mutates the DOM
+// constantly — that was a real FPS drain).
+let scanScheduled = false;
+function scheduleScan() {
+    if (scanScheduled) return;
+    scanScheduled = true;
+    const run = () => { scanScheduled = false; scan(document); };
+    if (typeof requestIdleCallback === "function") requestIdleCallback(run, { timeout: 500 });
+    else setTimeout(run, 250);
+}
+
 function handleVisibilityChange() {
     if (document.visibilityState === "hidden") {
         observer?.disconnect();
     } else if (observer) {
         observer.observe(document.body, { childList: true, subtree: true });
-        scan(document);
+        scheduleScan();
     }
 }
 
@@ -104,13 +118,12 @@ export default definePlugin({
     authors: [{ name: "Nightcord", id: 0n }],
 
     start() {
-        observer = new MutationObserver(mutations => {
+        observer = new MutationObserver(() => {
             if (document.visibilityState === "hidden") return;
-            for (const m of mutations) {
-                for (const node of m.addedNodes) {
-                    if (node instanceof HTMLElement) scan(node);
-                }
-            }
+            // Cheap guard once per batch: if there are no outgoing requests there is
+            // nothing to patch, so skip the whole DOM scan.
+            if (!hasOutgoingRequests()) return;
+            scheduleScan();
         });
         if (document.visibilityState !== "hidden") {
             observer.observe(document.body, { childList: true, subtree: true });

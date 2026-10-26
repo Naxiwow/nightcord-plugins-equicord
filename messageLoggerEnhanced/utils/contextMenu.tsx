@@ -6,7 +6,8 @@
 
 import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
 import { findStoreLazy } from "@webpack";
-import { FluxDispatcher, Menu, MessageActions, React, Toasts, UserStore } from "@webpack/common";
+import { FluxDispatcher, Menu, MessageActions, React, UserStore } from "@webpack/common";
+import { Toasts } from "@api/legacyToast";
 
 import { openLogModal } from "../components/LogsModal";
 import { deleteMessageIDB } from "../db";

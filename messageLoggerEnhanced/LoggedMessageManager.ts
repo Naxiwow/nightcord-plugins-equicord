@@ -20,22 +20,39 @@ import { Flogger, settings } from ".";
 import { addMessageIDB, db, DBMessageStatus, deleteMessagesBulkIDB, getOlderThanTimestampForGuildsIDB, getOldestMessagesIDB } from "./db";
 import { LoggedMessage, LoggedMessageJSON } from "./types";
 import { cleanupMessage } from "./utils";
+import { getGuildIdByChannel } from "./utils/misc";
 import { cacheMessageImages } from "./utils/saveImage";
 
 let lastCleanupTime = 0;
 const CLEANUP_COOLDOWN = 60 * 1000;
 
+// Returns true if this message's images are allowed to be saved to disk,
+// based on the optional per-server/channel whitelist (saveImagesWhitelist).
+function isImageSaveWhitelisted(message: LoggedMessage | LoggedMessageJSON): boolean {
+    const raw = settings.store.saveImagesWhitelist?.trim();
+    if (!raw) return true; // empty whitelist = save images everywhere (old behaviour)
+
+    const allowed = raw.split(",").map(id => id.trim()).filter(Boolean);
+    if (allowed.length === 0) return true;
+
+    const channelId = (message as any).channel_id;
+    const guildId = (message as any).guild_id ?? (channelId ? getGuildIdByChannel(channelId) : undefined);
+
+    return (guildId != null && allowed.includes(guildId)) || (channelId != null && allowed.includes(channelId));
+}
+
 export const addMessage = async (message: LoggedMessage | LoggedMessageJSON, status: DBMessageStatus, currentChannelId?: string) => {
-    if (settings.store.saveImages && status === DBMessageStatus.DELETED)
+    if (settings.store.saveImages && status === DBMessageStatus.DELETED && isImageSaveWhitelisted(message))
         await cacheMessageImages(message);
     const finalMessage = cleanupMessage(message);
 
     await addMessageIDB(finalMessage, status);
 
-    if (settings.store.timeBasedCleanupMinutes > 0) {
-        const now = Date.now();
-        if (now - lastCleanupTime > CLEANUP_COOLDOWN) {
-            lastCleanupTime = now;
+    const now = Date.now();
+    if (now - lastCleanupTime > CLEANUP_COOLDOWN) {
+        lastCleanupTime = now;
+
+        if (settings.store.timeBasedCleanupMinutes > 0) {
             const cutoffTime = new Date(now - settings.store.timeBasedCleanupMinutes * 60 * 1000).toISOString();
             const oldGuildMessages = await getOlderThanTimestampForGuildsIDB(cutoffTime, currentChannelId, settings.store.preserveCurrentChannel);
 
@@ -44,18 +61,18 @@ export const addMessage = async (message: LoggedMessage | LoggedMessageJSON, sta
                 await deleteMessagesBulkIDB(oldGuildMessages.map(m => m.message_id));
             }
         }
-    }
 
-    if (settings.store.messageLimit > 0) {
-        const currentMessageCount = await db.count("messages");
-        if (currentMessageCount > settings.store.messageLimit) {
-            const messagesToDelete = currentMessageCount - settings.store.messageLimit;
-            if (messagesToDelete <= 0 || messagesToDelete >= settings.store.messageLimit) return;
+        if (settings.store.messageLimit > 0) {
+            const currentMessageCount = await db.count("messages");
+            if (currentMessageCount > settings.store.messageLimit) {
+                const messagesToDelete = currentMessageCount - settings.store.messageLimit;
+                if (messagesToDelete <= 0 || messagesToDelete >= settings.store.messageLimit) return;
 
-            const oldestMessages = await getOldestMessagesIDB(messagesToDelete);
+                const oldestMessages = await getOldestMessagesIDB(messagesToDelete);
 
-            Flogger.info(`Deleting ${messagesToDelete} oldest messages`);
-            await deleteMessagesBulkIDB(oldestMessages.map(m => m.message_id));
+                Flogger.info(`Deleting ${messagesToDelete} oldest messages`);
+                await deleteMessagesBulkIDB(oldestMessages.map(m => m.message_id));
+            }
         }
     }
 };

@@ -18,7 +18,7 @@
 
 import JSONParser from "@streamparser/json/jsonparser.js";
 import { chooseFile as chooseFileWeb } from "@utils/web";
-import { Toasts } from "@webpack/common";
+import { Toasts } from "@api/legacyToast";
 import { showSaveFilePicker } from "native-file-system-adapter";
 
 import { clearLogs,Native } from "..";

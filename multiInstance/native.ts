@@ -233,6 +233,7 @@ export async function openInstanceWindow(
                 sandbox: false,
                 session: ses,
                 webSecurity: false,
+                backgroundThrottling: true,
             },
         });
 
@@ -392,6 +393,7 @@ export async function openInstanceWindowGrouped(
                 sandbox: false,
                 session: ses,
                 webSecurity: false,
+                backgroundThrottling: true,
             },
         });
 
@@ -496,12 +498,13 @@ export async function arrangeSplit(_: any, userId: string): Promise<void> {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function getOpenInstances(_: any): Promise<string[]> {
-    return [...openWindows.entries()]
-        .filter(([, w]) => !w.isDestroyed())
-        .map(([id]) => id);
+    const ids = new Set<string>();
+    for (const [id, w] of openWindows) if (!w.isDestroyed()) ids.add(id);
+    for (const [id, w] of openGroupedWindows) if (!w.isDestroyed()) ids.add(id);
+    return [...ids];
 }
 
 export async function closeInstance(_: any, userId: string): Promise<void> {
-    const win = openWindows.get(userId);
+    const win = openWindows.get(userId) ?? openGroupedWindows.get(userId);
     if (win && !win.isDestroyed()) win.close();
 }

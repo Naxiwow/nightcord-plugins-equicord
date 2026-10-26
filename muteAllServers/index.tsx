@@ -6,10 +6,16 @@
 
 import { addContextMenuPatch, removeContextMenuPatch } from "@api/ContextMenu";
 import definePlugin from "@utils/types";
-import { findByPropsLazy } from "@webpack";
-import { ActiveJoinedThreadsStore, ChannelStore, FluxDispatcher, GuildChannelStore, GuildStore, Menu, React, ReadStateStore, RestAPI, Toasts } from "@webpack/common";
+import { ActiveJoinedThreadsStore, ChannelStore, FluxDispatcher, GuildChannelStore, GuildStore, Menu, React, ReadStateStore, RestAPI, UserGuildSettingsStore } from "@webpack/common";
+import { showToast } from "@api/legacyToast";
 
-const updateGuildNotificationSettings = findByPropsLazy("updateGuildNotificationSettings");
+const sleep = (ms: number) => new Promise<void>(r => setTimeout(r, ms));
+// Pause between guilds: firing one PATCH per guild with no delay got the whole
+// batch rate-limited (429), so most servers silently stayed unmuted.
+const DELAY_BETWEEN_GUILDS_MS = 600;
+const MAX_RETRIES = 4;
+
+let running = false;
 
 function MuteIcon({ width = 18, height = 18 }: { width?: number; height?: number; }) {
     return (
@@ -51,36 +57,75 @@ function markAllAsRead() {
     }
 }
 
-async function muteAll() {
-    const guildIds = Object.keys(GuildStore.getGuilds());
+const MUTE_SETTINGS = {
+    muted: true,
+    mute_config: { selected_time_window: -1, end_time: null },
+    suppress_everyone: true,
+    suppress_roles: true,
+    message_notifications: 2,
+    mobile_push: false,
+};
 
-    Toasts.show({ message: "Muting all and clearing notifications…", type: Toasts.Type.MESSAGE, id: Toasts.genId() });
-    markAllAsRead();
-
-    for (const id of guildIds) {
+async function muteGuild(id: string): Promise<boolean> {
+    for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
         try {
-            try { await RestAPI.post({ url: `/guilds/${id}/ack`, body: {} }); } catch { }
-
-            const notifSettings = {
-                muted: true,
-                mute_config: { selected_time_window: -1, end_time: null },
-                suppress_everyone: true,
-                suppress_roles: true,
-                message_notifications: 2,
-                mobile_push: false,
-            };
-
-            if (updateGuildNotificationSettings?.updateGuildNotificationSettings) {
-                await updateGuildNotificationSettings.updateGuildNotificationSettings(id, notifSettings);
-            } else {
-                await RestAPI.patch({ url: `/users/@me/guilds/${id}/settings`, body: notifSettings });
+            await RestAPI.patch({ url: `/users/@me/guilds/${id}/settings`, body: MUTE_SETTINGS });
+            return true;
+        } catch (e: any) {
+            if (e?.status === 429 && attempt < MAX_RETRIES) {
+                // Discord gives retry_after in seconds.
+                const waitMs = Math.min(60_000, Math.ceil((e?.body?.retry_after ?? 2) * 1000) + 250);
+                await sleep(waitMs);
+                continue;
             }
-        } catch (e) {
             console.warn(`[MuteAllServers] Error for ${id}:`, e);
+            return false;
         }
     }
+    return false;
+}
 
-    Toasts.show({ message: "Everything is now muted and read!", type: Toasts.Type.SUCCESS, id: Toasts.genId() });
+async function muteAll() {
+    if (running) {
+        showToast("Already running, please wait…", "message");
+        return;
+    }
+    running = true;
+
+    try {
+        // Read first: one local BULK_ACK covers every channel, no per-guild request needed.
+        try {
+            markAllAsRead();
+        } catch (e) {
+            console.warn("[MuteAllServers] markAllAsRead failed:", e);
+        }
+
+        const guildIds = Object.keys(GuildStore.getGuilds());
+        const toMute = guildIds.filter(id => !UserGuildSettingsStore.isMuted(id));
+        const alreadyMuted = guildIds.length - toMute.length;
+
+        showToast(
+            toMute.length
+                ? `Read all ✓ — muting ${toMute.length} server(s)… (~${Math.ceil(toMute.length * DELAY_BETWEEN_GUILDS_MS / 1000)}s)`
+                : "Read all ✓ — every server was already muted.",
+            "message"
+        );
+
+        let ok = 0;
+        let failed = 0;
+        for (const id of toMute) {
+            if (await muteGuild(id)) ok++;
+            else failed++;
+            await sleep(DELAY_BETWEEN_GUILDS_MS);
+        }
+
+        showToast(
+            `Muted ${ok} · already muted ${alreadyMuted}${failed ? ` · failed ${failed} (see console)` : ""}`,
+            failed ? "failure" : "success"
+        );
+    } finally {
+        running = false;
+    }
 }
 
 const guildContextPatch = (children: any, { guild }: { guild?: any; }) => {

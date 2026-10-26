@@ -86,17 +86,31 @@ async function silentDeleteMessage(channelId: string, messageId: string, deleteO
 }
 
 const messageContextMenuPatch: NavContextMenuPatchCallback = (children, { message }) => {
-    if (!message || message.author.id !== UserStore.getCurrentUser().id || !message.deleted) return;
+    if (!message || message.author?.id !== UserStore.getCurrentUser()?.id) return;
 
     const group = findGroupChildrenByChildId("remove-message-history", children) ?? children;
-    group.push(
-        <Menu.MenuItem
-            id="silent-delete-history"
-            label={<span style={{ color: getAccentColor() }}>Silent Delete History</span>}
-            action={() => silentDeleteMessage(message.channel_id, message.id, false)}
-            icon={SilentDeleteIcon}
-        />
-    );
+
+    if (message.deleted) {
+        group.push(
+            <Menu.MenuItem
+                id="silent-delete-history"
+                label={<span style={{ color: getAccentColor() }}>Silent Delete History</span>}
+                action={() => silentDeleteMessage(message.channel_id, message.id, false)}
+                icon={SilentDeleteIcon}
+            />
+        );
+    } else {
+        // Fallback for when the MessagePopoverAPI patch breaks after a Discord update:
+        // a right-click entry works through the (separate) context-menu API.
+        group.push(
+            <Menu.MenuItem
+                id="silent-delete"
+                label={<span style={{ color: getAccentColor() }}>Silent Delete</span>}
+                action={() => silentDeleteMessage(message.channel_id, message.id)}
+                icon={SilentDeleteIcon}
+            />
+        );
+    }
 };
 
 export default definePlugin({

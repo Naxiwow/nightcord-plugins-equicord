@@ -1,0 +1,65 @@
+.vc-copytag-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    background: var(--background-base-lower);
+}
+
+.vc-copytag-badge {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+}
+
+.vc-copytag-text {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-strong, var(--header-primary));
+}
+
+.vc-copytag-details {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.vc-copytag-colors {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.vc-copytag-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.2));
+}
+
+.vc-copytag-label {
+    margin: 16px 0 6px;
+}
+
+.vc-copytag-ok {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-positive, var(--status-positive));
+}
+
+.vc-copytag-problem {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-danger, var(--status-danger));
+}
+
+.vc-copytag-hint {
+    font-size: 13px;
+    color: var(--text-muted);
+}

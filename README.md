@@ -15,8 +15,9 @@
 <div align="center">
 
 ```
-I did not write these plugins. Credit goes to the original Nightcord contributors.
+I did not write most of these plugins. Credit goes to the original Nightcord contributors.
 This repo makes them compile and run in Equicord without breaking voice / audio.
+Plugins marked ✦ are original work.
 ```
 
 </div>
@@ -30,19 +31,43 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 | Plugin | Description |
 |:---|:---|
 | **cancelFriendRequest** | Click "Friend Request Sent" again to cancel it |
+| **copyTag** ✦ | Copy another server's tag (text, badge, colours) onto a server you own — tells you when the badge pack is missing |
+| **customStream** | Custom stream preview images with profiles & slideshow |
+| **disableStreamerMode** ✦ | Stops Discord from auto-enabling streamer mode when OBS is detected |
 | **eventLogs** | Comprehensive event log — voice joins/leaves, friends, server changes |
 | **exportDM** | Export DMs to HTML · TXT · JSON · CSV · Markdown |
+| **expressionDownloader** ✦ | Right-click an emoji or sticker → download it |
+| **fakeDeafen** | Appear deafened and muted to others while you can still hear and talk (keybind) |
+| **fakeDM** ✦ | Injects fake local messages into a DM or group DM |
+| **fastDiscord** | Performance profile: animations, media, memory cache, background FPS, presence |
+| **fastPFP** | Set any image as your profile picture or banner from the context menu |
+| **fastPing** | Double-click a user ID typed in the chat box to turn it into a mention |
+| **fixPostMessageTransport** ✦ | Silences hCaptcha PostMessageTransport errors to reduce captcha lag |
 | **followUser** | Right-click → Follow User — auto-joins their voice channel |
+| **leaveAllServers** | Leave all selected servers from the server context menu |
 | **lockGroup** | Lock group DMs — auto-kicks anyone added without owner approval |
 | **loginWithToken** | Adds a "Login with Token" button on the Discord login page |
 | **messageCleaner** | Cleans all your messages in a channel or server with rate-limit handling |
 | **messageLoggerEnhanced** | Full message logger with deleted/edited tracking and image cache |
+| **messagePlanner** ✦ | Schedule messages: pick server, channel, date/time and how many times (with an interval) |
 | **multiInstance** | Opens a 2nd Discord window with another account |
 | **muteAllServers** | Right-click any server → mute all + mark everything as read |
+| **mutualScanner** | Scans servers for members that share a mutual friend with you |
+| **realtimeTimestamps** | Live seconds on every message timestamp |
+| **roleMentionFix** ✦ | Roles always show up in the `@` autocomplete, even when many users match |
+| **SaveGroups** | Keeps group DMs you were kicked from, read-only, with saved history |
 | **selfDestruct** | Messages auto-delete after a configurable delay |
+| **serverCloner** | Clone a whole server (channels, roles, permissions, icon, emojis) to one you administer |
 | **silentDelete** | Silently deletes a message — bypasses message loggers via placeholder replacement |
+| **snipeAttachments** | Downloads and caches incoming attachments so you keep them even if deleted |
+| **streamBlurPrivacy** | Blur messages in selected conversations while streaming |
+| **Surveillance** | Local live event dashboard for selected users and servers |
 | **tokenImporter** | Import and manage multiple Discord accounts via tokens |
+| **unfriendAll** | Remove all selected friends from the friend context menu |
 | **unlimitedAccounts** | Increases the number of accounts you can add (default: unlimited) |
+| **wordBomb** ✦ | BombParty / WordBomb assistant with a draggable overlay |
+
+<sub>✦ = original plugin, not from Nightcord.</sub>
 
 </div>
 
@@ -161,20 +186,16 @@ This repo makes them compile and run in Equicord without breaking voice / audio.
 </details>
 
 <details>
-<summary><b>muteAllServers</b> — 1 fix</summary>
+<summary><b>muteAllServers</b> — rewritten (October 2026)</summary>
 
 <br/>
 
-**Fix — `findByPropsLazy` called inside async function**
-```diff
-+ const updateGuildNotificationSettings = findByPropsLazy("updateGuildNotificationSettings");
+The original fired one `ack` + one settings request per server with no pause. Discord rate-limited (429) almost all of them, so most servers stayed unmuted, and the plugin still announced success.
 
-  async function muteAll() {
--     const updateSettings = findByPropsLazy("updateGuildNotificationSettings");
--     await updateSettings.updateGuildNotificationSettings(id, settings);
-+     await updateGuildNotificationSettings.updateGuildNotificationSettings(id, notifSettings);
-  }
-```
+- servers already muted are skipped
+- one request per server, 600 ms apart, with automatic retry honouring Discord's `retry_after`
+- "mark as read" is a single local `BULK_ACK` instead of one request per server
+- the final toast shows real numbers (`Muted X · already muted Y · failed Z`)
 
 </details>
 
@@ -203,6 +224,22 @@ Compatible with Equicord as-is. No nightcord-specific imports or patches needed.
 </details>
 
 <br/>
+
+<details>
+<summary><b>Equicord compatibility shims</b> — required by most plugins</summary>
+
+<br/>
+
+Equicord keeps changing small internal APIs, so the plugins here import two tiny helper modules. Copy both files from [`_shims/api/`](_shims/api) into `src/api/` of your Equicord source:
+
+- **`legacyToast.ts`** — recent Equicord removed `Toasts` / `createToast` and only keeps `showToast({ text, variant })`. This module keeps the old `Toasts.show({ message, type })` and `showToast("text", "success")` calls working. Plugins import `{ showToast, Toasts } from "@api/legacyToast"`.
+- **`pluginI18n.ts`** — identity replacement for Nightcord's `t()` translation helper (`@api/pluginI18n`).
+
+Also make sure your `tsconfig.json` maps `@plugins/*` to `./src/userplugins/*` as well.
+
+</details>
+
+> **Not included here:** server-specific plugins, third-party libraries (`philsPluginLibrary`, `betterMicrophone`) and the plugins that have their own repository (`better-quest-completer`, `copyProfile`, `weatherStatus`, `discordLyricsSpotifyStatus`).
 
 > **Excluded:** `FakeVoice` and `VolumeBooster` — both apply compile-time webpack patches on chunks co-located with Discord's voice activity detection. Active regardless of the plugin toggle, permanently breaking auto input sensitivity. Not fixable without a full rewrite.
 

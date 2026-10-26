@@ -9,7 +9,8 @@ import { HeaderBarButton } from "@api/HeaderBar";
 import { DataStore } from "@api/index";
 import definePlugin from "@utils/types";
 import { findByPropsLazy, findStoreLazy } from "@webpack";
-import { Menu, React, Toasts, useEffect, useState } from "@webpack/common";
+import { Menu, React, useEffect, useState } from "@webpack/common";
+import { Toasts } from "@api/legacyToast";
 
 const VoiceStateStore = findStoreLazy("VoiceStateStore");
 const ChannelStore = findStoreLazy("ChannelStore");

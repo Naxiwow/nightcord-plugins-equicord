@@ -1,0 +1,102 @@
+.vc-planner-label {
+    margin: 14px 0 6px;
+}
+
+.vc-planner-datetime {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--input-border, transparent);
+    background: var(--input-background, var(--background-base-lower));
+    color: var(--text-default, var(--text-normal));
+    color-scheme: dark;
+    font-size: 14px;
+}
+
+.vc-planner-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.vc-planner-row > :first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+.vc-planner-summary {
+    margin-top: 14px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    background: var(--background-base-lower);
+    color: var(--text-default, var(--text-normal));
+    font-size: 13px;
+}
+
+.vc-planner-error {
+    margin-top: 10px;
+    color: var(--text-danger, var(--status-danger));
+    font-size: 13px;
+}
+
+.vc-planner-hint {
+    margin-top: 10px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.vc-planner-job {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    background: var(--background-base-lower);
+}
+
+.vc-planner-job.done {
+    opacity: 0.75;
+}
+
+.vc-planner-job-main {
+    min-width: 0;
+}
+
+/* status dot: green = active, grey = done, red = failed */
+.vc-planner-job-target::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 8px;
+    border-radius: 50%;
+    background: var(--status-positive);
+}
+
+.vc-planner-job.done .vc-planner-job-target::before {
+    background: var(--text-muted);
+}
+
+.vc-planner-job.failed .vc-planner-job-target::before {
+    background: var(--status-danger);
+}
+
+.vc-planner-job-target {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.vc-planner-job-text {
+    margin: 2px 0;
+    font-size: 13px;
+    color: var(--text-default, var(--text-normal));
+    overflow-wrap: anywhere;
+}
+
+.vc-planner-job-status {
+    font-size: 12px;
+    color: var(--text-muted);
+}

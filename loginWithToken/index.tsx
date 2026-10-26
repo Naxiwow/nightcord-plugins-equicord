@@ -7,7 +7,7 @@
 import { ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalRoot, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { findByProps } from "@webpack";
-import { Forms, React, useState } from "@webpack/common";
+import { FluxDispatcher, Forms, React, UserStore, useState } from "@webpack/common";
 
 // Identique à TokenImporter — même logique de connexion
 function switchToAccount(token: string) {
@@ -181,10 +181,25 @@ function stopObserver() {
     document.getElementById(MOUNT_ID)?.remove();
 }
 
+// Once we're connected the login form never comes back this session, so we can
+// drop the (constant, document.body-wide) MutationObserver entirely — big perf win.
+function onConnected() {
+    stopObserver();
+    FluxDispatcher.unsubscribe("CONNECTION_OPEN", onConnected);
+}
+
 export default definePlugin({
     name: "LoginWithToken",
     description: "Adds a 'Login with Token' button on the Discord login page.",
     authors: [{ name: "naxiwow", id: 875342291001278504n }],
-    start() { startObserver(); },
-    stop() { stopObserver(); },
+    start() {
+        // Already logged in? The login screen is gone for good — do nothing.
+        if (UserStore.getCurrentUser()?.id) return;
+        startObserver();
+        FluxDispatcher.subscribe("CONNECTION_OPEN", onConnected);
+    },
+    stop() {
+        FluxDispatcher.unsubscribe("CONNECTION_OPEN", onConnected);
+        stopObserver();
+    },
 });

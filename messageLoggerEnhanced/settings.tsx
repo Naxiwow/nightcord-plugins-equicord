@@ -70,6 +70,12 @@ export const settings = definePluginSettings({
         default: false
     },
 
+    saveImagesWhitelist: {
+        type: OptionType.STRING,
+        default: "",
+        description: "Comma separated server (or channel) IDs. If set, deleted attachments are ONLY saved to disk for these servers/channels — everything else logs text but skips images. Leave empty to save images everywhere.",
+    },
+
     sortNewest: {
         default: true,
         type: OptionType.BOOLEAN,

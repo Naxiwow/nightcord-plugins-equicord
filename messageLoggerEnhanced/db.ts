@@ -4,7 +4,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import { ChannelStore, Toasts } from "@webpack/common";
+import { ChannelStore } from "@webpack/common";
+import { Toasts } from "@api/legacyToast";
 import { DBSchema, IDBPDatabase, openDB } from "idb";
 
 import { LoggedMessageJSON } from "./types";
@@ -239,7 +240,10 @@ export async function addMessagesBulkIDB(messages: LoggedMessageJSON[], status?:
     const { store } = tx;
 
     await Promise.all([
-        ...messages.map(message => store.add({
+        // put (upsert) instead of add: add throws "ConstraintError: Key already exists"
+        // when a message is already stored (e.g. MESSAGE_DELETE_BULK re-processing the
+        // same ids), and that rejection breaks the channel's render pipeline.
+        ...messages.map(message => store.put({
             channel_id: message.channel_id,
             message_id: message.id,
             status: status ?? getMessageStatus(message),

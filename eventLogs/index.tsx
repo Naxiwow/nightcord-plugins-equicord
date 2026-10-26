@@ -10,23 +10,17 @@ import { addHeaderBarButton, HeaderBarButton, removeHeaderBarButton } from "@api
 import { ModalCloseButton,ModalContent, ModalHeader, ModalRoot, openModal } from "@utils/modal";
 import definePlugin from "@utils/types";
 import { findByPropsLazy } from "@webpack";
-import { ChannelStore, ContextMenuApi, FluxDispatcher, Forms, GuildStore, IconUtils, Menu, MessageStore, React, Select, SelectedChannelStore, showToast, Toasts, useCallback, useEffect, useMemo, UserStore, useState } from "@webpack/common";
+import { ChannelStore, ContextMenuApi, FluxDispatcher, Forms, GuildStore, IconUtils, Menu, MessageStore, NavigationRouter, React, Select, SelectedChannelStore, useCallback, useEffect, useMemo, UserStore, useState } from "@webpack/common";
+import { showToast, Toasts } from "@api/legacyToast";
 
 const t = (s: string) => s;
 const useTranslation = () => ({ t });
 
-// Stratégie de navigation alternative via Dispatcher
+// findByPropsLazy("transitionTo") no longer matches anything (Discord mangled the
+// router module), so use Equicord's maintained NavigationRouter instead.
 const navigateTo = (path: string) => {
     try {
-        const Router = findByPropsLazy("transitionTo") || findByPropsLazy("push");
-        if (Router?.transitionTo) return Router.transitionTo(path);
-        if (Router?.push) return Router.push(path);
-
-        // Dernier recours via le dispatcher
-        FluxDispatcher.dispatch({
-            type: "NAVIGATE_TO",
-            path: path
-        });
+        NavigationRouter.transitionTo(path);
     } catch (e) {
         console.error("Navigation error", e);
     }
@@ -700,7 +694,7 @@ function subscribeToEvents() {
             if (!s.channelId) prevVS.delete(s.userId); else prevVS.set(s.userId, s);
             if (s.userId === meId) myVoiceChannelId = s.channelId ?? null;
         }
-        setTimeout(() => { for (const s of snapshot) {
+        const processVoice = () => { for (const s of snapshot) {
             const { userId, channelId, oldChannelId, guildId } = s;
             if (!userId) continue;
 
@@ -742,7 +736,13 @@ function subscribeToEvents() {
                 if (s.selfStream !== p.selfStream) pushLog({ type: "voice_stream", content: s.selfStream ? t("Stream started") : t("Stream stopped"), ...b });
             }
         }
-        }, 0); });
+        };
+        if (typeof requestIdleCallback !== "undefined") {
+            requestIdleCallback(processVoice, { timeout: 1000 });
+        } else {
+            setTimeout(processVoice, 0);
+        }
+    });
     const relUser = (data: any) => {
         const rel = data?.relationship ?? data; const userId = rel?.user?.id ?? rel?.id ?? data?.userId ?? "?";
         let name = rel?.user?.global_name ?? rel?.user?.globalName ?? rel?.user?.username ?? null;

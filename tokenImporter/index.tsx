@@ -7,7 +7,7 @@
 import "./styles.css";
 
 import { definePluginSettings } from "@api/Settings";
-import { addHeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
+import { addHeaderBarButton, HeaderBarButton, removeHeaderBarButton } from "@api/HeaderBar";
 import { DataStore } from "@api/index";
 import { ModalCloseButton,ModalContent, ModalHeader, ModalRoot, openModal } from "@utils/modal";
 import { PluginNative } from "@utils/types";
