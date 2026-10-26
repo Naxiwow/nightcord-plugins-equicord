@@ -26,48 +26,83 @@ Plugins marked ✦ are original work.
 
 ## ◈ &nbsp; Plugins
 
-<div align="center">
+All plugins live in [`plugins/`](plugins). **36 plugins**, grouped below. ✦ = original plugin, not from Nightcord.
+
+### 💬 Messages & chat
 
 | Plugin | Description |
 |:---|:---|
-| **cancelFriendRequest** | Click "Friend Request Sent" again to cancel it |
-| **copyTag** ✦ | Copy another server's tag (text, badge, colours) onto a server you own — tells you when the badge pack is missing |
-| **customStream** | Custom stream preview images with profiles & slideshow |
-| **disableStreamerMode** ✦ | Stops Discord from auto-enabling streamer mode when OBS is detected |
-| **eventLogs** | Comprehensive event log — voice joins/leaves, friends, server changes |
-| **exportDM** | Export DMs to HTML · TXT · JSON · CSV · Markdown |
-| **expressionDownloader** ✦ | Right-click an emoji or sticker → download it |
-| **fakeDeafen** | Appear deafened and muted to others while you can still hear and talk (keybind) |
-| **fakeDM** ✦ | Injects fake local messages into a DM or group DM |
-| **fastDiscord** | Performance profile: animations, media, memory cache, background FPS, presence |
-| **fastPFP** | Set any image as your profile picture or banner from the context menu |
-| **fastPing** | Double-click a user ID typed in the chat box to turn it into a mention |
-| **fixPostMessageTransport** ✦ | Silences hCaptcha PostMessageTransport errors to reduce captcha lag |
-| **followUser** | Right-click → Follow User — auto-joins their voice channel |
-| **leaveAllServers** | Leave all selected servers from the server context menu |
-| **lockGroup** | Lock group DMs — auto-kicks anyone added without owner approval |
-| **loginWithToken** | Adds a "Login with Token" button on the Discord login page |
-| **messageCleaner** | Cleans all your messages in a channel or server with rate-limit handling |
-| **messageLoggerEnhanced** | Full message logger with deleted/edited tracking and image cache |
-| **messagePlanner** ✦ | Schedule messages: pick server, channel, date/time and how many times (with an interval) |
-| **multiInstance** | Opens a 2nd Discord window with another account |
-| **muteAllServers** | Right-click any server → mute all + mark everything as read |
-| **mutualScanner** | Scans servers for members that share a mutual friend with you |
-| **realtimeTimestamps** | Live seconds on every message timestamp |
-| **roleMentionFix** ✦ | Roles always show up in the `@` autocomplete, even when many users match |
-| **SaveGroups** | Keeps group DMs you were kicked from, read-only, with saved history |
-| **selfDestruct** | Messages auto-delete after a configurable delay |
-| **serverCloner** | Clone a whole server (channels, roles, permissions, icon, emojis) to one you administer |
-| **silentDelete** | Silently deletes a message — bypasses message loggers via placeholder replacement |
-| **snipeAttachments** | Downloads and caches incoming attachments so you keep them even if deleted |
-| **streamBlurPrivacy** | Blur messages in selected conversations while streaming |
-| **Surveillance** | Local live event dashboard for selected users and servers |
-| **tokenImporter** | Import and manage multiple Discord accounts via tokens |
-| **unfriendAll** | Remove all selected friends from the friend context menu |
-| **unlimitedAccounts** | Increases the number of accounts you can add (default: unlimited) |
-| **wordBomb** ✦ | BombParty / WordBomb assistant with a draggable overlay |
+| [**messageCleaner**](plugins/messageCleaner) | Cleans all your messages in a channel or server with rate-limit handling |
+| [**messageLoggerEnhanced**](plugins/messageLoggerEnhanced) | Full message logger with deleted/edited tracking and image cache |
+| [**messagePlanner**](plugins/messagePlanner) ✦ | Schedule messages: pick server, channel, date/time and how many times (with an interval) |
+| [**selfDestruct**](plugins/selfDestruct) | Messages auto-delete after a configurable delay |
+| [**silentDelete**](plugins/silentDelete) | Silently deletes a message — bypasses message loggers via placeholder replacement |
+| [**snipeAttachments**](plugins/snipeAttachments) | Downloads and caches incoming attachments so you keep them even if deleted |
+| [**fastPing**](plugins/fastPing) | Double-click a user ID typed in the chat box to turn it into a mention |
+| [**roleMentionFix**](plugins/roleMentionFix) ✦ | Roles always show up in the `@` autocomplete, even when many users match |
+| [**realtimeTimestamps**](plugins/realtimeTimestamps) | Live seconds on every message timestamp |
+| [**fakeDM**](plugins/fakeDM) ✦ | Injects fake local messages into a DM or group DM |
+| [**exportDM**](plugins/exportDM) | Export DMs to HTML · TXT · JSON · CSV · Markdown |
 
-<sub>✦ = original plugin, not from Nightcord.</sub>
+### 🏰 Servers
+
+| Plugin | Description |
+|:---|:---|
+| [**muteAllServers**](plugins/muteAllServers) | Right-click any server → mute all + mark everything as read |
+| [**leaveAllServers**](plugins/leaveAllServers) | Leave all selected servers from the server context menu |
+| [**serverCloner**](plugins/serverCloner) | Clone a whole server (channels, roles, permissions, icon, emojis) to one you administer |
+| [**copyTag**](plugins/copyTag) ✦ | Copy another server's tag (text, badge, colours) onto a server you own — tells you when the badge pack is missing |
+| [**expressionDownloader**](plugins/expressionDownloader) ✦ | Right-click an emoji or sticker → download it |
+
+### 👥 Friends & groups
+
+| Plugin | Description |
+|:---|:---|
+| [**cancelFriendRequest**](plugins/cancelFriendRequest) | Click "Friend Request Sent" again to cancel it |
+| [**unfriendAll**](plugins/unfriendAll) | Remove all selected friends from the friend context menu |
+| [**lockGroup**](plugins/lockGroup) | Lock group DMs — auto-kicks anyone added without owner approval |
+| [**SaveGroups**](plugins/SaveGroups) | Keeps group DMs you were kicked from, read-only, with saved history |
+| [**followUser**](plugins/followUser) | Right-click → Follow User — auto-joins their voice channel |
+| [**mutualScanner**](plugins/mutualScanner) | Scans servers for members that share a mutual friend with you |
+
+### 🎙️ Voice & streaming
+
+| Plugin | Description |
+|:---|:---|
+| [**fakeDeafen**](plugins/fakeDeafen) | Appear deafened and muted to others while you can still hear and talk (keybind) |
+| [**customStream**](plugins/customStream) | Custom stream preview images with profiles & slideshow |
+| [**streamBlurPrivacy**](plugins/streamBlurPrivacy) | Blur messages in selected conversations while streaming |
+| [**disableStreamerMode**](plugins/disableStreamerMode) ✦ | Stops Discord from auto-enabling streamer mode when OBS is detected |
+
+### 🔑 Accounts & profile
+
+| Plugin | Description |
+|:---|:---|
+| [**loginWithToken**](plugins/loginWithToken) | Adds a "Login with Token" button on the Discord login page |
+| [**tokenImporter**](plugins/tokenImporter) | Import and manage multiple Discord accounts via tokens |
+| [**multiInstance**](plugins/multiInstance) | Opens a 2nd Discord window with another account |
+| [**unlimitedAccounts**](plugins/unlimitedAccounts) | Increases the number of accounts you can add (default: unlimited) |
+| [**fastPFP**](plugins/fastPFP) | Set any image as your profile picture or banner from the context menu |
+
+### 📊 Logs & monitoring
+
+| Plugin | Description |
+|:---|:---|
+| [**eventLogs**](plugins/eventLogs) | Comprehensive event log — voice joins/leaves, friends, server changes |
+| [**Surveillance**](plugins/Surveillance) | Local live event dashboard for selected users and servers |
+
+### ⚡ Performance & fixes
+
+| Plugin | Description |
+|:---|:---|
+| [**fastDiscord**](plugins/fastDiscord) | Performance profile: animations, media, memory cache, background FPS, presence |
+| [**fixPostMessageTransport**](plugins/fixPostMessageTransport) ✦ | Silences hCaptcha PostMessageTransport errors to reduce captcha lag |
+
+### 🎮 Games
+
+| Plugin | Description |
+|:---|:---|
+| [**wordBomb**](plugins/wordBomb) ✦ | BombParty / WordBomb assistant with a draggable overlay |
 
 </div>
 
@@ -230,7 +265,7 @@ Compatible with Equicord as-is. No nightcord-specific imports or patches needed.
 
 <br/>
 
-Equicord keeps changing small internal APIs, so the plugins here import two tiny helper modules. Copy both files from [`_shims/api/`](_shims/api) into `src/api/` of your Equicord source:
+Equicord keeps changing small internal APIs, so the plugins here import two tiny helper modules. Copy both files from [`shims/api/`](shims/api) into `src/api/` of your Equicord source:
 
 - **`legacyToast.ts`** — recent Equicord removed `Toasts` / `createToast` and only keeps `showToast({ text, variant })`. This module keeps the old `Toasts.show({ message, type })` and `showToast("text", "success")` calls working. Plugins import `{ showToast, Toasts } from "@api/legacyToast"`.
 - **`pluginI18n.ts`** — identity replacement for Nightcord's `t()` translation helper (`@api/pluginI18n`).
@@ -247,13 +282,13 @@ Also make sure your `tsconfig.json` maps `@plugins/*` to `./src/userplugins/*` a
 
 ## ◈ &nbsp; Installation
 
-Drop any plugin folder into `src/userplugins/` in your Equicord source, then:
+1. Copy the two files of [`shims/api/`](shims/api) into `src/api/` of your Equicord source.
+2. Drop the plugin folders you want from [`plugins/`](plugins) into `src/userplugins/`.
+3. Build, then inject the build into Discord with the Equicord installer and restart Discord:
 
 ```bash
 pnpm build
 ```
-
-Copy `dist/desktop.asar` → `%APPDATA%\Equicord\equicord.asar` and restart Discord.
 
 <br/>
 
